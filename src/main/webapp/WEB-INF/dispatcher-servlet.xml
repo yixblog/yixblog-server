@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:annotation-config/>
-    <context:component-scan base-package="cn.yix.blog"/>
+    <context:component-scan base-package="cn.yixblog"/>
     <!--mvc-->
     <mvc:annotation-driven>
         <mvc:message-converters register-defaults="false">
@@ -23,7 +23,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
     <mvc:interceptors>
-        <bean class="cn.yix.blog.plugins.spring.SessionInterceptor">
+        <bean class="cn.yixblog.plugins.spring.SessionInterceptor">
             <property name="open" value="true"/>
             <property name="adminBlackList">
                 <array>
@@ -43,7 +43,7 @@
     </mvc:interceptors>
 
 
-    <bean class="cn.yix.blog.controller.exception.ExceptionHandler">
+    <bean class="cn.yixblog.controller.exception.ExceptionHandler">
         <property name="order" value="1"/>
     </bean>
     <!--velocity-->
