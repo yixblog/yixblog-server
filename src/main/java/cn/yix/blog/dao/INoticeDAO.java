@@ -1,4 +1,4 @@
-package cn.yix.blog.dao.mappers;
+package cn.yix.blog.dao;
 
 import cn.yix.blog.dao.beans.NoticeBean;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * Date: 13-6-18
  * Time: 下午9:33
  */
-public interface NoticeMapper {
+public interface INoticeDAO {
     public List<NoticeBean> list(int... pageArgs);
 
     public int count();

@@ -1,4 +1,4 @@
-package cn.yix.blog.dao.mappers;
+package cn.yix.blog.dao;
 
 import cn.yix.blog.dao.beans.AccountBean;
 
@@ -11,7 +11,7 @@ import java.util.Map;
  * Date: 13-5-23
  * Time: 下午9:46
  */
-public interface AccountMapper {
+public interface IAccountDAO {
     /**
      * list available accounts
      *

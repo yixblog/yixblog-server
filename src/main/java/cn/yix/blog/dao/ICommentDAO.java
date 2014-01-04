@@ -1,4 +1,4 @@
-package cn.yix.blog.dao.mappers;
+package cn.yix.blog.dao;
 
 import cn.yix.blog.dao.beans.CommentBean;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * Date: 13-5-26
  * Time: 上午12:50
  */
-public interface CommentMapper {
+public interface ICommentDAO {
 
     public List<CommentBean> listCommentsByArticle(int articleId, int... pageArgs);
 

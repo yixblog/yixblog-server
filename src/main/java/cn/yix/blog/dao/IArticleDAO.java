@@ -1,4 +1,4 @@
-package cn.yix.blog.dao.mappers;
+package cn.yix.blog.dao;
 
 import cn.yix.blog.dao.beans.ArticleBean;
 import cn.yix.blog.dao.beans.TagCountBean;
@@ -12,7 +12,7 @@ import java.util.List;
  * Date: 13-5-26
  * Time: 上午12:40
  */
-public interface ArticleMapper {
+public interface IArticleDAO {
     /**
      * list articles
      *

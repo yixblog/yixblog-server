@@ -1,12 +1,12 @@
 package cn.yix.blog.storage.article;
 
 import cn.yix.blog.core.article.IArticleStorage;
+import cn.yix.blog.dao.IAccountDAO;
+import cn.yix.blog.dao.IAdminDAO;
+import cn.yix.blog.dao.IArticleDAO;
 import cn.yix.blog.dao.beans.AccountBean;
 import cn.yix.blog.dao.beans.AdminBean;
 import cn.yix.blog.dao.beans.ArticleBean;
-import cn.yix.blog.dao.mappers.AccountMapper;
-import cn.yix.blog.dao.mappers.AdminMapper;
-import cn.yix.blog.dao.mappers.ArticleMapper;
 import cn.yix.blog.storage.AbstractStorage;
 import cn.yix.blog.storage.article.datafix.ArticleQueryJSON;
 import com.alibaba.fastjson.JSONObject;
@@ -34,7 +34,7 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
         if (sortKey == null) {
             sortKey = "addtime";
         }
-        ArticleMapper articleMapper = getMapper(ArticleMapper.class);
+        IArticleDAO articleMapper = getMapper(IArticleDAO.class);
         List<ArticleBean> articles = null;
         if ("addtime".equals(sortKey)) {
             articles = articleMapper.listNewArticles(params, getRowBounds(page, pageSize));
@@ -95,14 +95,14 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
     @Override
     @Transactional
     public JSONObject saveArticle(int userId, String title, String content, boolean topFlag, String[] tags) {
-        AccountMapper accountMapper = getMapper(AccountMapper.class);
+        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
         JSONObject res = new JSONObject();
         AccountBean user = accountMapper.getAccountById(userId);
         if (user == null) {
             setResult(res, false, "用户不存在");
             return res;
         }
-        ArticleMapper articleMapper = getMapper(ArticleMapper.class);
+        IArticleDAO articleMapper = getMapper(IArticleDAO.class);
         ArticleBean article = new ArticleBean();
         article.setAuthor(user);
         article.setTitle(title);
@@ -120,7 +120,7 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
     @Override
     public JSONObject getUserTags(int userId) {
         JSONObject res = new JSONObject();
-        List<String> tags = getMapper(ArticleMapper.class).getUserTags(userId);
+        List<String> tags = getMapper(IArticleDAO.class).getUserTags(userId);
         res.put("tags", tags);
         logger.debug("get user tags:" + res.toJSONString());
         return res;
@@ -129,14 +129,14 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
     @Override
     @Transactional
     public JSONObject editArticle(int userId, int articleId, String title, String content, String[] tags) {
-        AccountMapper accountMapper = getMapper(AccountMapper.class);
+        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
         AccountBean user = accountMapper.getAccountById(userId);
         JSONObject res = new JSONObject();
         if (user == null) {
             setResult(res, false, "不存在的用户");
             return res;
         }
-        ArticleMapper articleMapper = getMapper(ArticleMapper.class);
+        IArticleDAO articleMapper = getMapper(IArticleDAO.class);
         ArticleBean article = articleMapper.getArticle(articleId);
         if (article == null) {
             setResult(res, false, "不存在的文章");
@@ -161,14 +161,14 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
     @Override
     @Transactional
     public JSONObject doAdminEditArticle(int adminId, int articleId, String title, String content, boolean topFlag, String[] tags) {
-        AdminMapper adminMapper = getMapper(AdminMapper.class);
+        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
         AdminBean admin = adminMapper.getAdminById(adminId);
         JSONObject res = new JSONObject();
         if (admin == null) {
             setResult(res, false, "管理员不存在");
             return res;
         }
-        ArticleMapper articleMapper = getMapper(ArticleMapper.class);
+        IArticleDAO articleMapper = getMapper(IArticleDAO.class);
         ArticleBean article = articleMapper.getArticle(articleId);
         if (article == null) {
             setResult(res, false, "文章不存在");
@@ -188,14 +188,14 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
     @Override
     @Transactional
     public JSONObject deleteArticle(int userId, int articleId) {
-        AccountMapper accountMapper = getMapper(AccountMapper.class);
+        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
         AccountBean user = accountMapper.getAccountById(userId);
         JSONObject res = new JSONObject();
         if (user == null) {
             setResult(res, false, "用户不存在");
             return res;
         }
-        ArticleMapper articleMapper = getMapper(ArticleMapper.class);
+        IArticleDAO articleMapper = getMapper(IArticleDAO.class);
         ArticleBean article = articleMapper.getArticle(articleId);
         if (article != null) {
             if (!article.getAuthor().equals(user)) {
@@ -211,14 +211,14 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
     @Override
     @Transactional
     public JSONObject doAdminDeleteArticle(int adminId, int articleId) {
-        AdminMapper adminMapper = getMapper(AdminMapper.class);
+        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
         AdminBean admin = adminMapper.getAdminById(adminId);
         JSONObject res = new JSONObject();
         if (admin == null) {
             setResult(res, false, "管理员不存在");
             return res;
         }
-        ArticleMapper articleMapper = getMapper(ArticleMapper.class);
+        IArticleDAO articleMapper = getMapper(IArticleDAO.class);
         ArticleBean article = articleMapper.getArticle(articleId);
         if (article != null) {
             articleMapper.delete(article);
@@ -229,7 +229,7 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
 
     @Override
     public JSONObject queryArticle(int articleId) {
-        ArticleMapper articleMapper = getMapper(ArticleMapper.class);
+        IArticleDAO articleMapper = getMapper(IArticleDAO.class);
         ArticleBean articleBean = articleMapper.getArticle(articleId);
         JSONObject res = new JSONObject();
         if (articleBean == null) {
@@ -243,7 +243,7 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
 
     @Override
     public JSONObject queryArticleForEdit(int articleId, int userId) {
-        ArticleMapper articleMapper = getMapper(ArticleMapper.class);
+        IArticleDAO articleMapper = getMapper(IArticleDAO.class);
         JSONObject res = new JSONObject();
         ArticleBean article = articleMapper.getArticle(articleId);
         if (article == null) {
@@ -261,7 +261,7 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
 
     @Override
     public JSONObject queryTags(int topNumber) {
-        ArticleMapper articleMapper = getMapper(ArticleMapper.class);
+        IArticleDAO articleMapper = getMapper(IArticleDAO.class);
         JSONObject res = new JSONObject();
         setResult(res, true, "查询成功");
         res.put("tags", articleMapper.listTags(topNumber));
@@ -270,7 +270,7 @@ public class ArticleStorage extends AbstractStorage implements IArticleStorage {
 
     @Override
     public JSONObject queryArticleAuthors(int topnumber) {
-        AccountMapper accountMapper = getMapper(AccountMapper.class);
+        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
         List<AccountBean> accounts = accountMapper.listTopArticleAuthors(getRowBounds(1, topnumber));
         JSONObject res = new JSONObject();
         setResult(res, true, "查询成功");

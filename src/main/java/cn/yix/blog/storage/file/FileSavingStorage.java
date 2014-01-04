@@ -2,10 +2,10 @@ package cn.yix.blog.storage.file;
 
 import cn.yix.blog.core.file.IFileSavingStorage;
 import cn.yix.blog.core.file.SavingResultInfo;
+import cn.yix.blog.dao.IAccountDAO;
+import cn.yix.blog.dao.IImageDAO;
 import cn.yix.blog.dao.beans.AccountBean;
 import cn.yix.blog.dao.beans.ImageBean;
-import cn.yix.blog.dao.mappers.AccountMapper;
-import cn.yix.blog.dao.mappers.ImageMapper;
 import cn.yix.blog.storage.AbstractStorage;
 import cn.yix.blog.utils.UEditorConfig;
 import org.apache.commons.io.FileUtils;
@@ -180,8 +180,8 @@ public class FileSavingStorage extends AbstractStorage implements IFileSavingSto
     }
 
     private void saveFileToDatabase(String url, int userId) {
-        ImageMapper imageMapper = getMapper(ImageMapper.class);
-        AccountMapper accountMapper = getMapper(AccountMapper.class);
+        IImageDAO imageMapper = getMapper(IImageDAO.class);
+        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
         AccountBean user = accountMapper.getAccountById(userId);
         if (user == null) {
             return;

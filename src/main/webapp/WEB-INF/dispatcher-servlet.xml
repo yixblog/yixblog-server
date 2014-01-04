@@ -23,7 +23,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
     <mvc:interceptors>
-        <bean class="cn.yix.blog.spring.SessionInterceptor">
+        <bean class="cn.yix.blog.plugins.spring.SessionInterceptor">
             <property name="open" value="true"/>
             <property name="adminBlackList">
                 <array>

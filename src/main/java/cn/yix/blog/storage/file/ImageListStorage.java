@@ -1,8 +1,8 @@
 package cn.yix.blog.storage.file;
 
 import cn.yix.blog.core.file.IImageListStorage;
+import cn.yix.blog.dao.IImageDAO;
 import cn.yix.blog.dao.beans.ImageBean;
-import cn.yix.blog.dao.mappers.ImageMapper;
 import cn.yix.blog.storage.AbstractStorage;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
@@ -32,7 +32,7 @@ public class ImageListStorage extends AbstractStorage implements IImageListStora
 
     @Override
     public List<String> listAllImages(int userid) {
-        ImageMapper mapper = getMapper(ImageMapper.class);
+        IImageDAO mapper = getMapper(IImageDAO.class);
         List<ImageBean> images = mapper.listUserImages(userid);
         List<String> urls = new ArrayList<>();
         for (ImageBean image : images) {
@@ -43,7 +43,7 @@ public class ImageListStorage extends AbstractStorage implements IImageListStora
 
     @Override
     public JSONObject listUserImages(int page, int pageSize, int userId) {
-        ImageMapper mapper = getMapper(ImageMapper.class);
+        IImageDAO mapper = getMapper(IImageDAO.class);
         int imageCount = mapper.getUserImageCount(userId);
         List<ImageBean> images = mapper.listUserImages(userId, getRowBounds(page, pageSize));
         JSONObject res = new JSONObject();
@@ -55,7 +55,7 @@ public class ImageListStorage extends AbstractStorage implements IImageListStora
 
     @Override
     public JSONObject deleteUserImage(int imageId, int userId) {
-        ImageMapper mapper = getMapper(ImageMapper.class);
+        IImageDAO mapper = getMapper(IImageDAO.class);
         ImageBean img = mapper.findOneImage(imageId);
         JSONObject res = new JSONObject();
         if (img.getUser().getId() != userId) {
