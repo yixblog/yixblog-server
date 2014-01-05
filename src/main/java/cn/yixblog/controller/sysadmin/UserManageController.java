@@ -23,20 +23,6 @@ public class UserManageController {
     private IUserAccountStorage userAccountStorage;
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public JSONObject listUsers(@RequestParam(defaultValue = "1", required = false) int page,
-                                @RequestParam(defaultValue = "20", required = false) int pageSize,
-                                @ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin) {
-        if (!admin.getBooleanValue("accountmanage")) {
-            JSONObject res = new JSONObject();
-            res.put("success", false);
-            res.put("msg", "您没有用户管理权限");
-            return res;
-        }
-        JSONObject params = new JSONObject();
-        return userAccountStorage.queryUsers(params, page, pageSize);
-    }
-
-    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public JSONObject queryUser(@RequestParam(defaultValue = "1", required = false) int page,
                                 @RequestParam(defaultValue = "20", required = false) int pageSize,
                                 @RequestParam(required = false) String uid, @RequestParam(required = false) String email,
