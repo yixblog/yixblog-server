@@ -1,6 +1,7 @@
-package cn.yixblog.dao;
+package cn.yixblog.dao.mappers;
 
 import cn.yixblog.dao.beans.ImageBean;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 
@@ -10,8 +11,8 @@ import java.util.List;
  * Date: 13-9-6
  * Time: 下午10:22
  */
-public interface IImageDAO {
-    public List<ImageBean> listUserImages(int userId, int... pageParam);
+public interface ImageMapper {
+    public List<ImageBean> listUserImages(int userId, RowBounds pageParam);
 
     public void saveImage(ImageBean image);
 

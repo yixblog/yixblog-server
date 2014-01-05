@@ -1,4 +1,4 @@
-package cn.yixblog.plugins.spring
+package cn.yixblog.handlers.spring
 
 import cn.yixblog.core.admin.IAdminAccountStorage
 import cn.yixblog.core.user.IUserAccountStorage

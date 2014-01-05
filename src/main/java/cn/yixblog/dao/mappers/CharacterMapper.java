@@ -1,4 +1,5 @@
-package cn.yixblog.dao;
+package cn.yixblog.dao.mappers;
+
 
 import cn.yixblog.dao.beans.CharacterBean;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Date: 13-5-26
  * Time: 上午12:52
  */
-public interface ICharacterDAO {
+public interface CharacterMapper {
     public List<CharacterBean> listCharacters();
 
     public List<CharacterBean> listAdminCharacters(int adminId);

@@ -1,15 +1,17 @@
 package cn.yixblog.storage.admin;
 
 import cn.yixblog.core.admin.IAdminCharacterStorage;
-import cn.yixblog.dao.IAdminDAO;
-import cn.yixblog.dao.ICharacterDAO;
 import cn.yixblog.dao.beans.AdminBean;
 import cn.yixblog.dao.beans.CharacterBean;
+import cn.yixblog.dao.mappers.AdminMapper;
+import cn.yixblog.dao.mappers.CharacterMapper;
 import cn.yixblog.storage.AbstractStorage;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +24,15 @@ import java.util.List;
 @Repository("adminCharacterStorage")
 public class AdminCharacterStorage extends AbstractStorage implements IAdminCharacterStorage {
 
+    @Resource(name = "sessionFactory")
+    @Override
+    public void setSqlSessionFactory(SqlSessionFactory sessionFactory) {
+        super.setSqlSessionFactory(sessionFactory);
+    }
 
     @Override
     public List<JSONObject> queryAllCharacters() {
-        ICharacterDAO characterMapper = getMapper(ICharacterDAO.class);
+        CharacterMapper characterMapper = getMapper(CharacterMapper.class);
         List<CharacterBean> characters = characterMapper.listCharacters();
         return buildJSONList(characters);
     }
@@ -42,7 +49,7 @@ public class AdminCharacterStorage extends AbstractStorage implements IAdminChar
     @Override
     @Transactional
     public JSONObject updateCharacter(int id, String name, int permissionMask) {
-        ICharacterDAO characterMapper = getMapper(ICharacterDAO.class);
+        CharacterMapper characterMapper = getMapper(CharacterMapper.class);
         JSONObject res = new JSONObject();
         CharacterBean characterBean = characterMapper.getCharacter(id);
         if (characterBean == null) {
@@ -76,7 +83,7 @@ public class AdminCharacterStorage extends AbstractStorage implements IAdminChar
     @Transactional
     public JSONObject saveCharacter(String name, int permissionMask) {
         CharacterBean characterBean = new CharacterBean();
-        ICharacterDAO characterMapper = getMapper(ICharacterDAO.class);
+        CharacterMapper characterMapper = getMapper(CharacterMapper.class);
         JSONObject res = new JSONObject();
         if (characterMapper.checkNameExists(name) > 0) {
             setResult(res, false, "名称已存在");
@@ -92,7 +99,7 @@ public class AdminCharacterStorage extends AbstractStorage implements IAdminChar
     @Override
     @Transactional
     public JSONObject deleteCharacter(int id) {
-        ICharacterDAO characterMapper = getMapper(ICharacterDAO.class);
+        CharacterMapper characterMapper = getMapper(CharacterMapper.class);
         JSONObject res = new JSONObject();
         CharacterBean character = characterMapper.getCharacter(id);
         if (character != null) {
@@ -104,7 +111,7 @@ public class AdminCharacterStorage extends AbstractStorage implements IAdminChar
 
     @Override
     public JSONObject queryCharacter(int id) {
-        ICharacterDAO characterMapper = getMapper(ICharacterDAO.class);
+        CharacterMapper characterMapper = getMapper(CharacterMapper.class);
         CharacterBean characterBean = characterMapper.getCharacter(id);
         JSONObject res = new JSONObject();
         if (characterBean == null) {
@@ -119,8 +126,8 @@ public class AdminCharacterStorage extends AbstractStorage implements IAdminChar
     @Override
     @Transactional
     public JSONObject doSetAdminCharacters(int adminId, int... characterIds) {
-        ICharacterDAO characterMapper = getMapper(ICharacterDAO.class);
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        CharacterMapper characterMapper = getMapper(CharacterMapper.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean admin = adminMapper.getAdminById(adminId);
         JSONObject res = new JSONObject();
         if (admin == null) {

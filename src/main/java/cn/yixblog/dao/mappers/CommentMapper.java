@@ -1,6 +1,7 @@
-package cn.yixblog.dao;
+package cn.yixblog.dao.mappers;
 
 import cn.yixblog.dao.beans.CommentBean;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 
@@ -10,13 +11,13 @@ import java.util.List;
  * Date: 13-5-26
  * Time: 上午12:50
  */
-public interface ICommentDAO {
+public interface CommentMapper {
 
-    public List<CommentBean> listCommentsByArticle(int articleId, int... pageArgs);
+    public List<CommentBean> listCommentsByArticle(int articleId, RowBounds pageArgs);
 
     public int countCommentsByArticle(int articleId);
 
-    public List<CommentBean> listCommentsByAccount(int accountId, int... pageArgs);
+    public List<CommentBean> listCommentsByAccount(int accountId, RowBounds pageArgs);
 
     public int countCommentsByAccount(int accountId);
 
@@ -26,7 +27,7 @@ public interface ICommentDAO {
 
     public CommentBean getComment(int commentId);
 
-    public List<CommentBean> listCommentsToAccount(int id, int... rowBounds);
+    public List<CommentBean> listCommentsToAccount(int id, RowBounds rowBounds);
 
     public int countCommentsToAccount(int id);
 }

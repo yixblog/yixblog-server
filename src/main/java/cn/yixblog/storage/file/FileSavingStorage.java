@@ -2,19 +2,21 @@ package cn.yixblog.storage.file;
 
 import cn.yixblog.core.file.IFileSavingStorage;
 import cn.yixblog.core.file.SavingResultInfo;
-import cn.yixblog.dao.IAccountDAO;
-import cn.yixblog.dao.IImageDAO;
 import cn.yixblog.dao.beans.AccountBean;
 import cn.yixblog.dao.beans.ImageBean;
+import cn.yixblog.dao.mappers.AccountMapper;
+import cn.yixblog.dao.mappers.ImageMapper;
 import cn.yixblog.storage.AbstractStorage;
 import cn.yixblog.utils.UEditorConfig;
 import org.apache.commons.io.FileUtils;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Decoder;
 
+import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +44,11 @@ public class FileSavingStorage extends AbstractStorage implements IFileSavingSto
     public FileSavingStorage() {
         initErrorCode();
         webRoot = System.getProperty("web.root");
+    }
+
+    @Resource(name = "sessionFactory")
+    public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+        super.setSqlSessionFactory(sqlSessionFactory);
     }
 
     private void initErrorCode() {
@@ -180,8 +187,8 @@ public class FileSavingStorage extends AbstractStorage implements IFileSavingSto
     }
 
     private void saveFileToDatabase(String url, int userId) {
-        IImageDAO imageMapper = getMapper(IImageDAO.class);
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        ImageMapper imageMapper = getMapper(ImageMapper.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean user = accountMapper.getAccountById(userId);
         if (user == null) {
             return;

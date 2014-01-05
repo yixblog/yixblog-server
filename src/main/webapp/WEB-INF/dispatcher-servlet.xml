@@ -23,7 +23,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
     <mvc:interceptors>
-        <bean class="cn.yixblog.plugins.spring.SessionInterceptor">
+        <bean class="cn.yixblog.handlers.spring.SessionInterceptor">
             <property name="open" value="true"/>
             <property name="adminBlackList">
                 <array>
@@ -43,18 +43,13 @@
     </mvc:interceptors>
 
 
-    <bean class="cn.yixblog.controller.exception.ExceptionHandler">
+    <bean class="cn.yixblog.handlers.spring.ExceptionHandler">
         <property name="order" value="1"/>
     </bean>
     <!--velocity-->
     <bean id="velocityConfigurer" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
         <property name="resourceLoaderPath" value="WEB-INF/velocity"/>
         <property name="configLocation" value="classpath:velocity.properties"/>
-    </bean>
-
-    <bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
-        <property name="suffix" value=".vm"/>
-        <property name="contentType" value="text/html;charset=utf-8"/>
     </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>

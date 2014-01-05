@@ -1,6 +1,7 @@
-package cn.yixblog.dao;
+package cn.yixblog.dao.mappers;
 
 import cn.yixblog.dao.beans.NoticeBean;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 
@@ -10,8 +11,8 @@ import java.util.List;
  * Date: 13-6-18
  * Time: 下午9:33
  */
-public interface INoticeDAO {
-    public List<NoticeBean> list(int... pageArgs);
+public interface NoticeMapper {
+    public List<NoticeBean> list(RowBounds pageArgs);
 
     public int count();
 

@@ -1,14 +1,17 @@
 package cn.yixblog.storage.file;
 
 import cn.yixblog.core.file.IImageListStorage;
-import cn.yixblog.dao.IImageDAO;
 import cn.yixblog.dao.beans.ImageBean;
+import cn.yixblog.dao.mappers.ImageMapper;
 import cn.yixblog.storage.AbstractStorage;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.ibatis.session.RowBounds;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +32,15 @@ public class ImageListStorage extends AbstractStorage implements IImageListStora
         webRoot = System.getProperty("web.root");
     }
 
+    @Resource(name = "sessionFactory")
+    public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+        super.setSqlSessionFactory(sqlSessionFactory);
+    }
 
     @Override
     public List<String> listAllImages(int userid) {
-        IImageDAO mapper = getMapper(IImageDAO.class);
-        List<ImageBean> images = mapper.listUserImages(userid);
+        ImageMapper mapper = getMapper(ImageMapper.class);
+        List<ImageBean> images = mapper.listUserImages(userid, new RowBounds());
         List<String> urls = new ArrayList<>();
         for (ImageBean image : images) {
             urls.add(image.getUrl());
@@ -43,7 +50,7 @@ public class ImageListStorage extends AbstractStorage implements IImageListStora
 
     @Override
     public JSONObject listUserImages(int page, int pageSize, int userId) {
-        IImageDAO mapper = getMapper(IImageDAO.class);
+        ImageMapper mapper = getMapper(ImageMapper.class);
         int imageCount = mapper.getUserImageCount(userId);
         List<ImageBean> images = mapper.listUserImages(userId, getRowBounds(page, pageSize));
         JSONObject res = new JSONObject();
@@ -55,7 +62,7 @@ public class ImageListStorage extends AbstractStorage implements IImageListStora
 
     @Override
     public JSONObject deleteUserImage(int imageId, int userId) {
-        IImageDAO mapper = getMapper(IImageDAO.class);
+        ImageMapper mapper = getMapper(ImageMapper.class);
         ImageBean img = mapper.findOneImage(imageId);
         JSONObject res = new JSONObject();
         if (img.getUser().getId() != userId) {

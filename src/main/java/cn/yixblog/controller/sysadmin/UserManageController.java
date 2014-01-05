@@ -4,7 +4,6 @@ import cn.yixblog.controller.SessionTokens;
 import cn.yixblog.core.user.IUserAccountStorage;
 import cn.yixblog.utils.DateUtils;
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,35 +15,39 @@ import javax.annotation.Resource;
  * Date: 13-6-16
  * Time: 下午11:14
  */
-@RequestMapping("/sysadmin/user")
+@RequestMapping("/sys")
 @SessionAttributes(SessionTokens.ADMIN_TOKEN)
-@Controller
+@RestController
 public class UserManageController {
     @Resource(name = "userAccountStorage")
     private IUserAccountStorage userAccountStorage;
 
-    @RequestMapping("/list.htm")
-    public String listUsers(@RequestParam(defaultValue = "1", required = false) int page,
-                            @RequestParam(defaultValue = "20", required = false) int pageSize,
-                            @ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin, Model model) {
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    public JSONObject listUsers(@RequestParam(defaultValue = "1", required = false) int page,
+                                @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                @ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin) {
         if (!admin.getBooleanValue("accountmanage")) {
-            return "redirect:/static/pages/illegal.html";
+            JSONObject res = new JSONObject();
+            res.put("success", false);
+            res.put("msg", "您没有用户管理权限");
+            return res;
         }
         JSONObject params = new JSONObject();
-        model.addAttribute("list", userAccountStorage.queryUsers(params, page, pageSize));
-        return "admin/user_list";
+        return userAccountStorage.queryUsers(params, page, pageSize);
     }
 
-    @RequestMapping(value = "/query.htm",method = RequestMethod.POST)
-    public String queryUser(@RequestParam(defaultValue = "1", required = false) int page,
-                            @RequestParam(defaultValue = "20", required = false) int pageSize,
-                            @RequestParam(required = false) String uid, @RequestParam(required = false) String email,
-                            @RequestParam(required = false) String nick, @RequestParam(required = false) String qq,
-                            @RequestParam(required = false) String weibo, @RequestParam(required = false) String startDate,
-                            @RequestParam(required = false) String endDate, @ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin,
-                            Model model) {
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    public JSONObject queryUser(@RequestParam(defaultValue = "1", required = false) int page,
+                                @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                @RequestParam(required = false) String uid, @RequestParam(required = false) String email,
+                                @RequestParam(required = false) String nick, @RequestParam(required = false) String qq,
+                                @RequestParam(required = false) String weibo, @RequestParam(required = false) String startDate,
+                                @RequestParam(required = false) String endDate, @ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin) {
         if (!admin.getBooleanValue("accountmanage")) {
-            return "redirect:/static/pages/illegal.html";
+            JSONObject res = new JSONObject();
+            res.put("success", false);
+            res.put("msg", "您没有用户管理权限");
+            return res;
         }
         JSONObject params = new JSONObject();
         String dateFormat = "yyyy-MM-dd";
@@ -69,43 +72,44 @@ public class UserManageController {
         if (endDate != null) {
             params.put("regtimeend", DateUtils.getTimeMillis(endDate, dateFormat));
         }
-        model.addAttribute("list",userAccountStorage.queryUsers(params,page,pageSize));
-        return "admin/user_list";
+        return userAccountStorage.queryUsers(params, page, pageSize);
     }
 
-    @RequestMapping(value = "/user_info.htm",method = RequestMethod.POST)
-    public String getUserInfo(@RequestParam int id,@ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin,Model model){
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+    public JSONObject getUserInfo(@PathVariable int id, @ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin) {
         if (!admin.getBooleanValue("accountmanage")) {
-            return "redirect:/static/pages/illegal.html";
-        }
-        model.addAttribute("info",userAccountStorage.queryUser(id));
-        return "admin/user_info";
-    }
-
-    @RequestMapping(value = "/edit_user.action",method = RequestMethod.POST)
-    public @ResponseBody JSONObject editUser(@RequestParam int id,@RequestParam(required = false) String nick,
-                                             @RequestParam(required = false) String pwd,
-                                             @RequestParam(required = false) String email,
-                                             @RequestParam(required = false) String sex,
-                                             @ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin){
-        JSONObject res = new JSONObject();
-        if (!admin.getBooleanValue("accountmanage")) {
-            res.put("success",false);
-            res.put("msg","您没有权限进行此操作");
+            JSONObject res = new JSONObject();
+            res.put("success", false);
+            res.put("msg", "您没有用户管理权限");
             return res;
         }
-        return userAccountStorage.editUser(id,pwd,nick,email,sex,null);
+        return userAccountStorage.queryUser(id);
     }
 
-    @RequestMapping(value = "/ban_user.action",method = RequestMethod.POST)
-    public @ResponseBody JSONObject banUser(@RequestParam int id,@RequestParam int banDays,
-                                            @ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin){
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
+    public JSONObject editUser(@PathVariable int id, @RequestParam(required = false) String nick,
+                               @RequestParam(required = false) String pwd,
+                               @RequestParam(required = false) String email,
+                               @RequestParam(required = false) String sex,
+                               @ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin) {
         JSONObject res = new JSONObject();
-        if (!admin.getBooleanValue("accountmanage")){
-            res.put("success",false);
-            res.put("msg","您没有权限执行此操作");
+        if (!admin.getBooleanValue("accountmanage")) {
+            res.put("success", false);
+            res.put("msg", "您没有用户管理权限");
             return res;
         }
-        return userAccountStorage.doBanUser(id,banDays);
+        return userAccountStorage.editUser(id, pwd, nick, email, sex, null);
+    }
+
+    @RequestMapping(value = "/user/{id}/ban", method = RequestMethod.POST)
+    public JSONObject banUser(@PathVariable int id, @RequestParam int banDays,
+                              @ModelAttribute(SessionTokens.ADMIN_TOKEN) JSONObject admin) {
+        JSONObject res = new JSONObject();
+        if (!admin.getBooleanValue("accountmanage")) {
+            res.put("success", false);
+            res.put("msg", "您没有权限执行此操作");
+            return res;
+        }
+        return userAccountStorage.doBanUser(id, banDays);
     }
 }

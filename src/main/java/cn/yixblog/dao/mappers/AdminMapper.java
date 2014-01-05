@@ -1,6 +1,7 @@
-package cn.yixblog.dao;
+package cn.yixblog.dao.mappers;
 
 import cn.yixblog.dao.beans.AdminBean;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 import java.util.Map;
@@ -11,12 +12,12 @@ import java.util.Map;
  * Date: 13-5-11
  * Time: 上午9:14
  */
-public interface IAdminDAO {
+public interface AdminMapper {
     public AdminBean getAdminByUid(String uid);
 
     public AdminBean getAdminById(int id);
 
-    public List<AdminBean> listAdmins(Map<String, Object> params, int... pageArgs);
+    public List<AdminBean> listAdmins(Map<String, Object> params, RowBounds pageArgs);
 
     public int countAdmins(Map<String, Object> params);
 

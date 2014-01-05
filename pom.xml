@@ -57,6 +57,19 @@
             <version>1.1.1</version>
         </dependency>
 
+        <!--mybatis-->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.yixblog</groupId>
+            <artifactId>yix-mybatis-mysql-dialect-plugin</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!-- test -->
         <dependency>
             <groupId>junit</groupId>

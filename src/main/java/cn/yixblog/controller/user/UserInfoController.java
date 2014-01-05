@@ -2,10 +2,10 @@ package cn.yixblog.controller.user;
 
 import cn.yixblog.core.user.IUserAccountStorage;
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
@@ -15,20 +15,14 @@ import javax.annotation.Resource;
  * Date: 13-10-7
  * Time: 下午5:02
  */
-@Controller
-@RequestMapping("/userinfo")
+@RestController
+@RequestMapping("/user")
 public class UserInfoController {
     @Resource(name = "userAccountStorage")
     private IUserAccountStorage accountStorage;
 
-    @RequestMapping("/{userid}.htm")
-    public String centerPage(@PathVariable String userid, Model model) {
-        if (userid.matches("\\d+")) {
-            JSONObject queryRes = accountStorage.queryUser(Integer.parseInt(userid));
-            if (queryRes.getBooleanValue("success")) {
-                model.addAttribute("user", queryRes.getJSONObject("user"));
-            }
-        }
-        return "account/user_info";
+    @RequestMapping("/{userId}")
+    public JSONObject centerPage(@PathVariable int userId) {
+        return accountStorage.queryUser(userId);
     }
 }

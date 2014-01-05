@@ -2,10 +2,10 @@ package cn.yixblog.controller.sysadmin;
 
 import cn.yixblog.controller.SessionTokens;
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import java.util.ArrayList;
@@ -17,8 +17,8 @@ import java.util.List;
  * Date: 13-7-8
  * Time: 下午11:37
  */
-@Controller
-@RequestMapping("/sysadmin")
+@RestController
+@RequestMapping("/sys")
 @SessionAttributes(SessionTokens.ADMIN_TOKEN)
 public class SystemController {
     @RequestMapping("/index.htm")

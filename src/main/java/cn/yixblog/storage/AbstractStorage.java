@@ -3,6 +3,8 @@ package cn.yixblog.storage;
 import cn.yixblog.utils.bean.ResetCode;
 import cn.yixblog.utils.timertask.ClearTaskBean;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.ibatis.session.RowBounds;
+import org.mybatis.spring.support.SqlSessionDaoSupport;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
  * Date: 13-6-21
  * Time: 下午4:50
  */
-public abstract class AbstractStorage  {
+public abstract class AbstractStorage extends SqlSessionDaoSupport {
 
     protected void setResult(JSONObject res, boolean success, String msg) {
         res.put("success", success);
@@ -29,7 +31,7 @@ public abstract class AbstractStorage  {
     }
 
     protected <T>T getMapper(Class<T> clazz){
-        return null;
+        return getSqlSession().getMapper(clazz);
     }
 
     protected int transferResetCodeType(int type) {
@@ -48,7 +50,7 @@ public abstract class AbstractStorage  {
         }
     }
 
-    protected int[] getRowBounds(int page,int pageSize){
-        return new int[]{(page-1)*pageSize,pageSize};
+    protected RowBounds getRowBounds(int page,int pageSize){
+        return new RowBounds((page-1)*pageSize,pageSize);
     }
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+    <typeAliases>
+        <!--Beans-->
+        <typeAlias type="cn.yixblog.dao.beans.AdminBean" alias="Admin"/>
+        <typeAlias type="cn.yixblog.dao.beans.AccountBean" alias="Account"/>
+        <typeAlias type="cn.yixblog.dao.beans.CharacterBean" alias="Character"/>
+        <typeAlias type="cn.yixblog.dao.beans.ArticleBean" alias="Article"/>
+        <typeAlias type="cn.yixblog.dao.beans.CommentBean" alias="Comment"/>
+        <typeAlias type="cn.yixblog.dao.beans.NoticeBean" alias="Notice"/>
+        <typeAlias type="cn.yixblog.dao.beans.TagCountBean" alias="TagCount"/>
+        <typeAlias type="cn.yixblog.dao.beans.ImageBean" alias="Image"/>
+    </typeAliases>
+
+    <plugins>
+        <plugin interceptor="cn.yixblog.mybatis.plugin.offsetlimit.OffsetLimitInterceptor">
+            <property name="dialectClass" value="cn.yixblog.mybatis.plugin.offsetlimit.MySQLDialect"/>
+        </plugin>
+    </plugins>
+</configuration>

@@ -1,8 +1,8 @@
 package cn.yixblog.storage.admin;
 
 import cn.yixblog.core.admin.IAdminAccountStorage;
-import cn.yixblog.dao.IAdminDAO;
 import cn.yixblog.dao.beans.AdminBean;
+import cn.yixblog.dao.mappers.AdminMapper;
 import cn.yixblog.storage.AbstractStorage;
 import cn.yixblog.utils.ResetCodeFactory;
 import cn.yixblog.utils.StringUtil;
@@ -11,7 +11,7 @@ import cn.yixblog.utils.bean.ResetCode;
 import cn.yixblog.utils.timertask.ClearResetCodeTask;
 import cn.yixblog.utils.timertask.ClearTaskBean;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.log4j.Logger;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,18 +28,22 @@ import java.util.Map;
  */
 @Repository("adminAccountStorage")
 public class AdminAccountStorage extends AbstractStorage implements IAdminAccountStorage {
-    private Logger logger = Logger.getLogger(getClass());
     @Resource(name = "mailTemplate")
     private VelocityMailTemplateSender mailTemplate;
     @Resource(name = "resetCodeClearer")
     private ClearResetCodeTask clearResetCodeTask;
 
+    @Override
+    @Resource(name = "sessionFactory")
+    public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+        super.setSqlSessionFactory(sqlSessionFactory);
+    }
 
     @Override
     @Transactional
     public JSONObject doLogin(String uid, String pwd) {
         uid = uid.toLowerCase();
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean adminBean = adminMapper.getAdminByUid(uid);
         JSONObject res = new JSONObject();
         if (adminBean == null) {
@@ -57,7 +61,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
         return res;
     }
 
-    private void updateLastLogin(IAdminDAO adminMapper, AdminBean adminBean) {
+    private void updateLastLogin(AdminMapper adminMapper, AdminBean adminBean) {
         adminBean.setLastLogin(System.currentTimeMillis());
         adminMapper.update(adminBean);
     }
@@ -68,7 +72,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
         uid = uid.toLowerCase();
         email = email.toLowerCase();
         JSONObject res = new JSONObject();
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         if (checkUidExists(uid, email, res, adminMapper)) {
             return res;
         }
@@ -100,7 +104,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
         return adminBean;
     }
 
-    private boolean checkUidExists(String uid, String email, JSONObject res, IAdminDAO adminMapper) {
+    private boolean checkUidExists(String uid, String email, JSONObject res, AdminMapper adminMapper) {
         if (adminMapper.getAdminByUid(uid) != null) {
             setResult(res, false, "用户名已存在");
             return true;
@@ -114,7 +118,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
 
     @Override
     public JSONObject queryForgetPasswordRequest(String uid, String email) {
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         uid = uid.toLowerCase();
         AdminBean adminBean = adminMapper.getAdminByUid(uid);
         JSONObject res = new JSONObject();
@@ -150,7 +154,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
     @Transactional
     public JSONObject doForceResetPassword(String resetCode, String pwd) {
         JSONObject res = new JSONObject();
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         ClearTaskBean task = clearResetCodeTask.queryTask(resetCode);
         if (task == null) {
             setResult(res, false, "不存在的申请，请检查申请是否已超时");
@@ -172,7 +176,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
     @Override
     @Transactional
     public JSONObject doChangePassword(int id, String oldPwd, String newPwd) {
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean adminBean = adminMapper.getAdminById(id);
         JSONObject res = new JSONObject();
         if (adminBean == null) {
@@ -193,7 +197,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
     @Override
     public JSONObject queryResetEmailRequest(int id) {
         JSONObject res = new JSONObject();
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean adminBean = adminMapper.getAdminById(id);
         if (adminBean == null) {
             setResult(res, false, "不存在的用户");
@@ -219,7 +223,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
             setResult(res, false, "申请已失效，请重新申请或检查是否有更新的申请邮件");
             return res;
         }
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean adminBean = adminMapper.getAdminById(task.getAdmin().getId());
         if (adminBean == null) {
             setResult(res, false, "不存在的用户，可能已被删除账号");
@@ -245,7 +249,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
         return res;
     }
 
-    private boolean checkEmailExists(String email, IAdminDAO adminMapper) {
+    private boolean checkEmailExists(String email, AdminMapper adminMapper) {
         return adminMapper.getAdminByEmail(email) != null;
     }
 
@@ -257,7 +261,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
             setResult(res, false, "申请已失效，请重新申请或检查是否有更新的申请邮件");
             return res;
         }
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean adminBean = adminMapper.getAdminById(task.getAdmin().getId());
         if (adminBean == null) {
             setResult(res, false, "不存在的用户，可能已被删除账号");
@@ -271,7 +275,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
     @Override
     @Transactional
     public JSONObject deleteAdmin(int id) {
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean adminBean = adminMapper.getAdminById(id);
         if (adminBean != null) {
             adminBean.setId(id);
@@ -289,7 +293,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
         if (email != null) {
             email = email.toLowerCase();
         }
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean admin = adminMapper.getAdminById(id);
         JSONObject res = new JSONObject();
         if (admin == null) {
@@ -314,7 +318,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
             return res;
         }
         int id = task.getId();
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean adminBean = adminMapper.getAdminById(id);
         if (adminBean == null) {
             setResult(res, false, "不存在的用户，可能已被删除账号");
@@ -331,7 +335,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
     @Override
     public JSONObject queryAdminById(int id) {
         JSONObject res = new JSONObject();
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean adminBean = adminMapper.getAdminById(id);
         res.put("admin", adminBean);
         return res.getJSONObject("admin");
@@ -339,7 +343,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
 
     @Override
     public JSONObject queryAdminList(String uid, String email, int page, int pageSize) {
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         Map<String, Object> params = new HashMap<>();
         if (uid != null) {
             params.put("uid", "%" + uid + "%");
@@ -358,7 +362,7 @@ public class AdminAccountStorage extends AbstractStorage implements IAdminAccoun
     @Override
     @Transactional
     public void doClearTempEmail(int id, String email) {
-        IAdminDAO adminMapper = getMapper(IAdminDAO.class);
+        AdminMapper adminMapper = getMapper(AdminMapper.class);
         AdminBean adminBean = adminMapper.getAdminById(id);
         if (adminBean != null && email.equals(adminBean.getTempEmail())) {
             adminBean.setTempEmail(null);

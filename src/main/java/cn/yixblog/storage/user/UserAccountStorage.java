@@ -1,8 +1,8 @@
 package cn.yixblog.storage.user;
 
 import cn.yixblog.core.user.IUserAccountStorage;
-import cn.yixblog.dao.IAccountDAO;
 import cn.yixblog.dao.beans.AccountBean;
+import cn.yixblog.dao.mappers.AccountMapper;
 import cn.yixblog.storage.AbstractStorage;
 import cn.yixblog.utils.ResetCodeFactory;
 import cn.yixblog.utils.StringUtil;
@@ -11,6 +11,8 @@ import cn.yixblog.utils.bean.ResetCode;
 import cn.yixblog.utils.timertask.ClearResetCodeTask;
 import cn.yixblog.utils.timertask.ClearTaskBean;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.ibatis.session.RowBounds;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,9 +36,14 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     @Resource(name = "resetCodeClearer")
     private ClearResetCodeTask resetCodeTask;
 
+    @Resource(name = "sessionFactory")
+    public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+        super.setSqlSessionFactory(sqlSessionFactory);
+    }
+
     @Override
     public JSONObject queryUsers(JSONObject param, int page, int pageSize) {
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         JSONObject res = new JSONObject();
         Map<String, Object> params = buildQueryUserParam(param);
         int totalCount = accountMapper.countListAccounts(params);
@@ -75,7 +82,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
 
     @Override
     public JSONObject queryUser(int id) {
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean bean = accountMapper.getAccountById(id);
         JSONObject res = new JSONObject();
         if (bean == null) {
@@ -91,7 +98,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     @Transactional
     public JSONObject doUserLogin(String uid, String pwd) {
         uid = uid.toLowerCase();
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         JSONObject res = new JSONObject();
         AccountBean accountBean = accountMapper.getAccountByUid(uid);
         if (accountBean == null) {
@@ -114,7 +121,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     public JSONObject queryForgetPasswordRequest(String uid, String email) {
         uid = uid.toLowerCase();
         email = email.toLowerCase();
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         JSONObject res = new JSONObject();
         AccountBean bean = accountMapper.getAccountByUid(uid);
         if (bean == null) {
@@ -147,7 +154,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
             setResult(res, false, "申请已失效，请重新申请或检查是否有更新的申请邮件");
             return res;
         }
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean account = accountMapper.getAccountById(task.getAccountBean().getId());
         if (account == null) {
             setResult(res, false, "不存在的用户，可能已被删除账号");
@@ -171,7 +178,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
             setResult(res, false, "非法请求，请求码与任务类型不匹配");
             return res;
         }
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean bean = accountMapper.getAccountById(task.getAccountBean().getId());
         if (bean == null) {
             setResult(res, false, "不存在的用户，可能已被删除账号");
@@ -197,7 +204,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
             setResult(res, false, "非法请求，请求码与任务类型不匹配");
             return res;
         }
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean bean = accountMapper.getAccountById(task.getAccountBean().getId());
         if (bean == null) {
             setResult(res, false, "不存在的用户，可能账号已被删除");
@@ -214,7 +221,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
 
     @Override
     public JSONObject requestConfirmEmail(int id) {
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean account = accountMapper.getAccountById(id);
         JSONObject res = new JSONObject();
         if (account == null) {
@@ -241,7 +248,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     @Transactional
     public JSONObject doChangePwd(int id, String oldPwd, String newPwd) {
         JSONObject res = new JSONObject();
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean account = accountMapper.getAccountById(id);
         if (account == null) {
             setResult(res, false, "不存在的用户，账号可能已被删除");
@@ -264,7 +271,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     public JSONObject doChangeEmail(int id, String email) {
         email = email.toLowerCase();
         JSONObject res = new JSONObject();
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean accountBean = accountMapper.getAccountById(id);
         if (accountBean == null) {
             setResult(res, false, "不存在的用户，账号可能已被删除");
@@ -301,7 +308,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     public JSONObject doClearTempEmail(int id, String email) {
         email = email.toLowerCase();
         JSONObject res = new JSONObject();
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean accountBean = accountMapper.getAccountById(id);
         if (accountBean != null && !accountBean.getTempEmail().equals(email)) {
             accountBean.setTempEmail(null);
@@ -326,7 +333,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
         account.setSex(sex);
         account.setNick(nick);
         account.setRegTime(System.currentTimeMillis());
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         JSONObject res = new JSONObject();
         if (accountMapper.getAccountByUid(uid) != null) {
             setResult(res, false, "用户名已存在");
@@ -334,7 +341,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
         }
         Map<String, Object> params = new HashMap<>();
         params.put("nick", nick);
-        if (accountMapper.listAllAccounts(params).size() > 0) {
+        if (accountMapper.listAllAccounts(params, new RowBounds()).size() > 0) {
             setResult(res, false, "昵称已存在");
             return res;
         }
@@ -375,7 +382,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     @Transactional
     public JSONObject editUser(int id, String pwd, String nick, String email, String sex, String avatar) {
         JSONObject res = new JSONObject();
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean account = accountMapper.getAccountById(id);
         if (account == null) {
             setResult(res, false, "不存在的用户");
@@ -407,7 +414,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     @Transactional
     public JSONObject doBanUser(int id, int days) {
         JSONObject res = new JSONObject();
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean account = accountMapper.getAccountById(id);
         if (account == null) {
             setResult(res, false, "不存在的用户");
@@ -426,7 +433,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     @Override
     @Transactional
     public void doUnbanUser(int id) {
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean bean = accountMapper.getAccountById(id);
         if (bean != null) {
             bean.setBanFlag(false);
@@ -437,7 +444,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     @Override
     @Transactional
     public void doUnbindQQ(int id) {
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean account = accountMapper.getAccountById(id);
         if (account != null) {
             account.setQq(null);
@@ -448,7 +455,7 @@ public class UserAccountStorage extends AbstractStorage implements IUserAccountS
     @Override
     @Transactional
     public void doUnbindWeibo(int id) {
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean account = accountMapper.getAccountById(id);
         if (account != null) {
             account.setWeibo(null);

@@ -1,6 +1,7 @@
-package cn.yixblog.dao;
+package cn.yixblog.dao.mappers;
 
 import cn.yixblog.dao.beans.AccountBean;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
  * Date: 13-5-23
  * Time: 下午9:46
  */
-public interface IAccountDAO {
+public interface AccountMapper {
     /**
      * list available accounts
      *
@@ -19,12 +20,12 @@ public interface IAccountDAO {
      * @param pageArgs page args
      * @return AccountBean list
      */
-    public List<AccountBean> listAccounts(Map<String, Object> params, int... pageArgs);
+    public List<AccountBean> listAccounts(Map<String, Object> params, RowBounds pageArgs);
 
     public int countListAccounts(Map<String, Object> params);
 
     //list all accounts includes banned ones
-    public List<AccountBean> listAllAccounts(Map<String, Object> params, int... pageArgs);
+    public List<AccountBean> listAllAccounts(Map<String, Object> params, RowBounds pageArgs);
 
     public int countListAllAccounts(Map<String, Object> params);
 
@@ -42,5 +43,5 @@ public interface IAccountDAO {
 
     public void update(AccountBean accountBean);
 
-    public List<AccountBean> listTopArticleAuthors(int... rb);
+    public List<AccountBean> listTopArticleAuthors(RowBounds rb);
 }

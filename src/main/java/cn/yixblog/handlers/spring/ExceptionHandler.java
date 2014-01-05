@@ -1,4 +1,4 @@
-package cn.yixblog.controller.exception;
+package cn.yixblog.handlers.spring;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.log4j.Logger;
@@ -20,19 +20,14 @@ public class ExceptionHandler extends AbstractHandlerExceptionResolver {
 
     @Override
     protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        String requestUri = request.getRequestURI();
         try {
             String outputString;
             logger.error(ex);
             ex.printStackTrace();
-            if (requestUri.endsWith(".action")) {
-                JSONObject resJSON = new JSONObject();
-                resJSON.put("success", false);
-                resJSON.put("msg", ex.getMessage());
-                outputString = resJSON.toJSONString();
-            } else {
-                outputString = "发生异常:" + ex.getMessage();
-            }
+            JSONObject resJSON = new JSONObject();
+            resJSON.put("success", false);
+            resJSON.put("msg", ex.getMessage());
+            outputString = resJSON.toJSONString();
             response.getWriter().write(outputString);
             response.getWriter().flush();
         } catch (IOException ignored) {

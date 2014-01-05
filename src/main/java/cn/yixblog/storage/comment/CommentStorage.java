@@ -1,18 +1,20 @@
 package cn.yixblog.storage.comment;
 
 import cn.yixblog.core.comment.ICommentStorage;
-import cn.yixblog.dao.IAccountDAO;
-import cn.yixblog.dao.IArticleDAO;
-import cn.yixblog.dao.ICommentDAO;
 import cn.yixblog.dao.beans.AccountBean;
 import cn.yixblog.dao.beans.ArticleBean;
 import cn.yixblog.dao.beans.CommentBean;
+import cn.yixblog.dao.mappers.AccountMapper;
+import cn.yixblog.dao.mappers.ArticleMapper;
+import cn.yixblog.dao.mappers.CommentMapper;
 import cn.yixblog.storage.AbstractStorage;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -26,10 +28,15 @@ public class CommentStorage extends AbstractStorage implements ICommentStorage {
 
     private Logger logger = Logger.getLogger(getClass());
 
+    @Resource(name = "sessionFactory")
+    public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+        super.setSqlSessionFactory(sqlSessionFactory);
+    }
+
     @Override
     public JSONObject queryArticleComments(int articleId, int page, int pageSize) {
         JSONObject res = new JSONObject();
-        ICommentDAO commentMapper = getMapper(ICommentDAO.class);
+        CommentMapper commentMapper = getMapper(CommentMapper.class);
         int totalCount = commentMapper.countCommentsByArticle(articleId);
         List<CommentBean> comments = commentMapper.listCommentsByArticle(articleId, getRowBounds(page, pageSize));
         setResult(res, true, "查询成功");
@@ -41,7 +48,7 @@ public class CommentStorage extends AbstractStorage implements ICommentStorage {
     @Override
     public JSONObject queryUserComments(int userId, int page, int pageSize) {
         JSONObject res = new JSONObject();
-        ICommentDAO commentMapper = getMapper(ICommentDAO.class);
+        CommentMapper commentMapper = getMapper(CommentMapper.class);
         int totalCount = commentMapper.countCommentsByAccount(userId);
         List<CommentBean> comments = commentMapper.listCommentsByAccount(userId, getRowBounds(page, pageSize));
         setResult(res, true, "查询成功");
@@ -52,7 +59,7 @@ public class CommentStorage extends AbstractStorage implements ICommentStorage {
 
     @Override
     public JSONObject queryCommentsToUser(int id, int page, int pageSize) {
-        ICommentDAO commentMapper = getMapper(ICommentDAO.class);
+        CommentMapper commentMapper = getMapper(CommentMapper.class);
         List<CommentBean> comments = commentMapper.listCommentsToAccount(id, getRowBounds(page, pageSize));
         int totalNumber = commentMapper.countCommentsToAccount(id);
         JSONObject res = new JSONObject();
@@ -65,7 +72,7 @@ public class CommentStorage extends AbstractStorage implements ICommentStorage {
 
     @Override
     public JSONObject getOneComment(int commentId) {
-        ICommentDAO commentMapper = getMapper(ICommentDAO.class);
+        CommentMapper commentMapper = getMapper(CommentMapper.class);
         CommentBean bean = commentMapper.getComment(commentId);
         JSONObject res = new JSONObject();
         if (bean != null) {
@@ -81,13 +88,13 @@ public class CommentStorage extends AbstractStorage implements ICommentStorage {
     @Transactional
     public JSONObject saveComment(int userId, int articleId, String title, String content) {
         JSONObject res = new JSONObject();
-        IAccountDAO accountMapper = getMapper(IAccountDAO.class);
+        AccountMapper accountMapper = getMapper(AccountMapper.class);
         AccountBean user = accountMapper.getAccountById(userId);
         if (user == null) {
             setResult(res, false, "不存在的用户");
             return res;
         }
-        IArticleDAO articleMapper = getMapper(IArticleDAO.class);
+        ArticleMapper articleMapper = getMapper(ArticleMapper.class);
         ArticleBean article = articleMapper.getArticle(articleId);
         if (article == null) {
             setResult(res, false, "不存在的文章");
@@ -99,7 +106,7 @@ public class CommentStorage extends AbstractStorage implements ICommentStorage {
         comment.setArticle(article);
         comment.setContent(content);
         comment.setTitle(title);
-        ICommentDAO commentMapper = getMapper(ICommentDAO.class);
+        CommentMapper commentMapper = getMapper(CommentMapper.class);
         commentMapper.save(comment);
         setResult(res, true, "评论添加成功");
         return res;
@@ -109,7 +116,7 @@ public class CommentStorage extends AbstractStorage implements ICommentStorage {
     @Transactional
     public JSONObject deleteComment(int commentId) {
         JSONObject res = new JSONObject();
-        ICommentDAO commentMapper = getMapper(ICommentDAO.class);
+        CommentMapper commentMapper = getMapper(CommentMapper.class);
         CommentBean comment = commentMapper.getComment(commentId);
         if (comment != null) {
             commentMapper.delete(comment);

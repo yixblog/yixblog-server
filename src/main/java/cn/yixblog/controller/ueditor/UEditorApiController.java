@@ -3,7 +3,6 @@ package cn.yixblog.controller.ueditor;
 import cn.yixblog.core.file.IImageListStorage;
 import cn.yixblog.utils.UEditorConfig;
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -21,17 +20,15 @@ import java.util.List;
  * Date: 13-9-1
  * Time: 下午9:54
  */
-@Controller
+@RestController
 @RequestMapping("/ueditor")
 @SessionAttributes("user")
 public class UEditorApiController {
     @Resource(name = "imageListStorage")
     private IImageListStorage imageListStorage;
 
-    @RequestMapping(value = "/movie.action", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    String getMovie(@RequestParam String searchKey, @RequestParam String videoType) throws IOException {
+    @RequestMapping(value = "/movie/search", method = RequestMethod.GET)
+    public String getMovie(@RequestParam String searchKey, @RequestParam String videoType) throws IOException {
         searchKey = URLEncoder.encode(searchKey, "utf-8");
         URL url = new URL("http://api.tudou.com/v3/gw?method=item.search&appKey=myKey&format=json&kw=" + searchKey + "&pageNo=1&pageSize=20&channelId=" + videoType + "&inDays=7&media=v&sort=s");
         URLConnection conn = url.openConnection();
@@ -44,10 +41,8 @@ public class UEditorApiController {
         return builder.toString();
     }
 
-    @RequestMapping(value = "/imageManage.action", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    String manageImages(@ModelAttribute("user")JSONObject user) {
+    @RequestMapping(value = "/imageManage", method = RequestMethod.GET)
+    public String manageImages(@ModelAttribute("user") JSONObject user) {
         List<String> files = imageListStorage.listAllImages(user.getIntValue("id"));
         return UEditorConfig.combineUrls(files);
     }

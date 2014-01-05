@@ -1,13 +1,15 @@
 package cn.yixblog.storage.notice;
 
 import cn.yixblog.core.notice.INoticeStorage;
-import cn.yixblog.dao.INoticeDAO;
 import cn.yixblog.dao.beans.NoticeBean;
+import cn.yixblog.dao.mappers.NoticeMapper;
 import cn.yixblog.storage.AbstractStorage;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -18,10 +20,14 @@ import java.util.List;
  */
 @Repository("noticeStorage")
 public class NoticeStorage extends AbstractStorage implements INoticeStorage {
+    @Resource(name = "sessionFactory")
+    public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+        super.setSqlSessionFactory(sqlSessionFactory);
+    }
 
     @Override
     public JSONObject queryNotices(int page, int pageSize) {
-        INoticeDAO noticeMapper = getMapper(INoticeDAO.class);
+        NoticeMapper noticeMapper = getMapper(NoticeMapper.class);
         List<NoticeBean> notices = noticeMapper.list(getRowBounds(page, pageSize));
         int total = noticeMapper.count();
         JSONObject res = new JSONObject();
@@ -33,7 +39,7 @@ public class NoticeStorage extends AbstractStorage implements INoticeStorage {
 
     @Override
     public JSONObject queryNotice(int noticeId) {
-        INoticeDAO noticeMapper = getMapper(INoticeDAO.class);
+        NoticeMapper noticeMapper = getMapper(NoticeMapper.class);
         NoticeBean notice = noticeMapper.queryById(noticeId);
         JSONObject res = new JSONObject();
         if (notice == null) {
@@ -48,7 +54,7 @@ public class NoticeStorage extends AbstractStorage implements INoticeStorage {
     @Override
     @Transactional
     public JSONObject saveNotice(String title, String content) {
-        INoticeDAO mapper = getMapper(INoticeDAO.class);
+        NoticeMapper mapper = getMapper(NoticeMapper.class);
         NoticeBean notice = new NoticeBean();
         notice.setTitle(title);
         notice.setContent(content);
@@ -63,7 +69,7 @@ public class NoticeStorage extends AbstractStorage implements INoticeStorage {
     @Override
     @Transactional
     public JSONObject updateNotice(int noticeId, String title, String content) {
-        INoticeDAO noticeMapper = getMapper(INoticeDAO.class);
+        NoticeMapper noticeMapper = getMapper(NoticeMapper.class);
         JSONObject res = new JSONObject();
         NoticeBean notice = noticeMapper.queryById(noticeId);
         if (notice == null) {
@@ -80,7 +86,7 @@ public class NoticeStorage extends AbstractStorage implements INoticeStorage {
     @Override
     @Transactional
     public JSONObject deleteNotice(int noticeId) {
-        INoticeDAO noticeMapper = getMapper(INoticeDAO.class);
+        NoticeMapper noticeMapper = getMapper(NoticeMapper.class);
         JSONObject res = new JSONObject();
         noticeMapper.delete(noticeId);
         setResult(res, true, "删除成功");

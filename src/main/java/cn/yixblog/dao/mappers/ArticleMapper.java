@@ -1,8 +1,9 @@
-package cn.yixblog.dao;
+package cn.yixblog.dao.mappers;
 
 import cn.yixblog.dao.beans.ArticleBean;
 import cn.yixblog.dao.beans.TagCountBean;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * Date: 13-5-26
  * Time: 上午12:40
  */
-public interface IArticleDAO {
+public interface ArticleMapper {
     /**
      * list articles
      *
@@ -20,9 +21,9 @@ public interface IArticleDAO {
      * @param pageArgs page args
      * @return list of ArticlesBean
      */
-    public List<ArticleBean> listNewArticles(JSONObject params, int... pageArgs);
+    public List<ArticleBean> listNewArticles(JSONObject params, RowBounds pageArgs);
 
-    public List<ArticleBean> listHotArticles(JSONObject params, int... pageArgs);
+    public List<ArticleBean> listHotArticles(JSONObject params, RowBounds pageArgs);
 
     public List<String> getArticleTags(int articleId);
 
@@ -34,11 +35,11 @@ public interface IArticleDAO {
 
     public ArticleBean getArticle(int id);
 
-    public List<ArticleBean> listArticlesByTag(String tag, int... pageArgs);
+    public List<ArticleBean> listArticlesByTag(String tag, RowBounds pageArgs);
 
     public int countArticlesByTag(String tag);
 
-    public List<ArticleBean> listArticlesByAccount(int accountId, int... pageArgs);
+    public List<ArticleBean> listArticlesByAccount(int accountId, RowBounds pageArgs);
 
     public int countArticlesByAccount(int accountId);
 
