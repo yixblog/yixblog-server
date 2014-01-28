@@ -1,7 +1,7 @@
 package cn.yixblog.utils.timertask;
 
-import cn.yixblog.core.admin.IAdminAccountStorage;
-import cn.yixblog.core.user.IUserAccountStorage;
+import cn.yixblog.businesses.accounts.admin.core.IAdminAccountStorage;
+import cn.yixblog.businesses.accounts.user.core.IUserAccountStorage;
 import cn.yixblog.dao.beans.AccountBean;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;

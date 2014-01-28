@@ -31,6 +31,13 @@
             <version>${spring.version}</version>
         </dependency>
 
+        <!--security-->
+        <dependency>
+            <groupId>cn.yixblog</groupId>
+            <artifactId>yixblog-security</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!--commons-->
         <dependency>
             <groupId>commons-fileupload</groupId>

@@ -2,7 +2,7 @@ package cn.yixblog.utils.timertask;
 
 import cn.yixblog.dao.beans.AccountBean;
 import cn.yixblog.dao.beans.AdminBean;
-import cn.yixblog.utils.bean.ResetCode;
+import cn.yixblog.tools.resetCode.bean.ResetCode;
 
 /**
  * Created with IntelliJ IDEA.

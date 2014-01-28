@@ -11,6 +11,7 @@
         <typeAlias type="cn.yixblog.dao.beans.NoticeBean" alias="Notice"/>
         <typeAlias type="cn.yixblog.dao.beans.TagCountBean" alias="TagCount"/>
         <typeAlias type="cn.yixblog.dao.beans.ImageBean" alias="Image"/>
+        <typeAlias type="cn.yixblog.dao.beans.TimerTaskBean" alias="Task"/>
     </typeAliases>
 
     <plugins>

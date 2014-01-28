@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.yixblog.dao.mappers.TimerTaskMapper">
+    <resultMap id="task" type="Task">
+        <id property="code" column="code"/>
+        <result property="type" column="type"/>
+        <result property="addtime" column="addtime"/>
+        <result property="overtime" column="overtime"/>
+        <result property="data" column="data"/>
+    </resultMap>
+
+    <select id="getTask" parameterType="String" resultMap="task">
+        select * from blog_timertask where code=#{code}
+    </select>
+
+    <delete id="clearOvertimes">
+        delete from blog_timertask where overtime&lt;unix_timestamp()
+    </delete>
+
+    <delete id="deleteTask" parameterType="String">
+        delete from blog_timertask where code=#{code}
+    </delete>
+
+    <insert id="addTask" parameterType="Task">
+        insert into blog_timertask set
+        code=#{code},
+        type=#{type},
+        addtime=#{addtime},
+        overtime=#{overtime},
+        data=#{data,jdbcType=VARCHAR}
+    </insert>
+</mapper>

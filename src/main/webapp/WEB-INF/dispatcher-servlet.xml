@@ -22,26 +22,6 @@
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
-    <mvc:interceptors>
-        <bean class="cn.yixblog.handlers.spring.SessionInterceptor">
-            <property name="open" value="true"/>
-            <property name="adminBlackList">
-                <array>
-                    <value>/accountservice/adminaccount/admin/**</value>
-                    <value>/sysadmin/**</value>
-                </array>
-            </property>
-            <property name="userBlackList">
-                <array>
-                    <value>/accountservice/account/user/**</value>
-                    <value>/user/**</value>
-                    <value>/uploader/**</value>
-                    <value>/ueditor/**</value>
-                </array>
-            </property>
-        </bean>
-    </mvc:interceptors>
-
 
     <bean class="cn.yixblog.handlers.spring.ExceptionHandler">
         <property name="order" value="1"/>
@@ -71,5 +51,15 @@
                 <ref bean="clearResetCodeTimer"/>
             </list>
         </property>
+    </bean>
+
+    <!--security-->
+    <bean id="pwdProvider" class="cn.yixblog.security.tools.PasswordProvider">
+        <property name="pwdOverTimeMinutes" value="5"/>
+    </bean>
+
+    <bean id="accountValidator" class="cn.yixblog.security.services.AccountManager">
+        <property name="pwdProvider" ref="pwdProvider"/>
+        <property name="availableMinutes" value="60"/>
     </bean>
 </beans>
